@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require 'koala'
 
 get '/' do
   erb :index
@@ -8,17 +9,7 @@ end
 get '/login' do
   @username = params[:username]
   @password = params[:password]
-  if @username == 'Lucas'
-    if @password == 'welcome'
-      redirect "/name?name=Lucas&state=Oregon"
-    else
-      @error = "Wrong Password"
-      erb :index
-    end
-  else
-    @error = "Wrong username"
-    erb :index
-  end
+
 end
 
 post "/login" do
@@ -26,7 +17,7 @@ post "/login" do
   @password = params[:password]
   if @username== 'Lucas'
     if @password == 'welcome'
-      erb :home 
+      erb :secrets
     else
       @error = "stupid idiot"
       erb :index
@@ -47,3 +38,9 @@ get '/name' do
   end
 end
 
+get '/secrets' do
+  return redirect '/' unless session[:user]
+  @graph = Koala::Facebook::API.new
+  @picture = @graph.get_picture('lucaskaufman.92')
+  erb :secrets
+end
